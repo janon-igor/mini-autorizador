@@ -1,6 +1,7 @@
 package com.example.mini.autorizador.dto;
 
 import com.example.mini.autorizador.model.Cartao;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.Objects;
@@ -12,10 +13,10 @@ import java.util.Objects;
 @AllArgsConstructor
 public class CartaoDTO {
 
-    private Long id;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) private Long id;
     private String numeroCartao;
     private String senha;
-    private Double saldo;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) private Double saldo;
 
     public Cartao convertToEntity() {
         return Cartao.builder().id(this.id).numeroCartao(this.numeroCartao).senha(this.senha).saldo(this.saldo).build();

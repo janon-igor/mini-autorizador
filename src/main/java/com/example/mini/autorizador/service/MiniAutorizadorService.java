@@ -17,7 +17,16 @@ public class MiniAutorizadorService {
         return this.miniAutorizadorRepository.findByNumeroCartao(numeroCartao);
     }
 
-    public Cartao novoCartao(final CartaoDTO request) {
-        return miniAutorizadorRepository.save(request.convertToEntity());
+    public Cartao saveOrUpdate(final CartaoDTO request) {
+        return this.saveOrUpdate(request.convertToEntity());
+    }
+
+    public Cartao saveOrUpdate(final Cartao cartao) {
+        return miniAutorizadorRepository.save(cartao);
+    }
+
+    public Cartao realizarTransacao(final Double valor, final Cartao cartao) {
+        cartao.setSaldo(cartao.getSaldo() - valor);
+        return this.saveOrUpdate(cartao);
     }
 }
