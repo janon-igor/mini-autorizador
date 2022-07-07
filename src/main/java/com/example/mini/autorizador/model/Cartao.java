@@ -1,11 +1,12 @@
 package com.example.mini.autorizador.model;
 
+import com.example.mini.autorizador.dto.CartaoDTO;
 import lombok.*;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
+import java.util.Objects;
 
 
 /**
@@ -24,7 +25,7 @@ public class Cartao implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "numero_cartao", nullable = false, length = 16)
     private String numeroCartao;
@@ -34,4 +35,28 @@ public class Cartao implements Serializable {
 
     @Column(name = "saldo", nullable = false)
     private Double saldo;
+
+    public CartaoDTO convertToDTO() {
+        return CartaoDTO.builder().id(this.id).numeroCartao(this.numeroCartao).senha(this.senha).saldo(this.saldo).build();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (ObjectUtils.isEmpty(this.saldo)) {
+            this.saldo = 500.0;
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Cartao)) return false;
+        Cartao cartao = (Cartao) o;
+        return Objects.equals(getId(), cartao.getId()) && Objects.equals(getNumeroCartao(), cartao.getNumeroCartao()) && Objects.equals(getSenha(), cartao.getSenha()) && Objects.equals(getSaldo(), cartao.getSaldo());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getNumeroCartao(), getSenha(), getSaldo());
+    }
 }
