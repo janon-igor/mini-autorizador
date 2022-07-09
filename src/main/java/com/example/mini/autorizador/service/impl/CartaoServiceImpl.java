@@ -16,13 +16,13 @@ class CartaoServiceImpl implements CartaoService {
     @Autowired private CartaoRepository cartaoRepository;
 
     @Override
-    public Optional<Cartao> consultarCartao(final String numeroCartao) {
+    public Optional<Cartao> consultar(final String numeroCartao) {
         return this.cartaoRepository.findByNumeroCartao(numeroCartao);
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
-    public Cartao cadastrarCartao(final CartaoDTO cartao) {
+    public Cartao cadastrar(final CartaoDTO cartao) {
         return cartaoRepository.save(cartao.convertToEntity());
     }
 
@@ -33,7 +33,7 @@ class CartaoServiceImpl implements CartaoService {
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
-    public void adicionarDebito(final Long id, final double valorDebito) {
-        this.cartaoRepository.debitarValor(id, valorDebito);
+    public Optional<Integer> debitarSaldo(final Long id, final double valorDebito) {
+        return this.cartaoRepository.debitar(id, valorDebito);
     }
 }

@@ -37,7 +37,12 @@ public class Cartao implements Serializable {
     private Double saldo;
 
     public CartaoDTO convertToDTO() {
-        return CartaoDTO.builder().id(this.id).numeroCartao(this.numeroCartao).senha(this.senha).saldo(this.saldo).build();
+        return CartaoDTO.builder()
+                //.id(this.id)
+                .numeroCartao(this.numeroCartao)
+                .senha(this.senha)
+                //.saldo(this.saldo)
+                .build();
     }
 
     @PrePersist

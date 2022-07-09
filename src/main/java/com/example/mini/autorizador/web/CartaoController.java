@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -21,11 +20,10 @@ class CartaoController {
     @Autowired private CartaoService cartaoService;
 
     @PostMapping(value = "/cartoes", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CartaoDTO> consultarCartao(@RequestBody CartaoDTO request) {
-
-        return this.cartaoService.consultarCartao(request.getNumeroCartao())
+    public ResponseEntity<CartaoDTO> consultar(@RequestBody CartaoDTO request) {
+        return this.cartaoService.consultar(request.getNumeroCartao())
                 .map(e -> ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.convertToDTO()))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.CREATED).body(this.cartaoService.cadastrarCartao(request).convertToDTO()));
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.CREATED).body(this.cartaoService.cadastrar(request).convertToDTO()));
     }
 
     @GetMapping(value = "/cartoes/{numeroCartao}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -36,16 +34,14 @@ class CartaoController {
     }
 
     @PostMapping(value = "/transacoes", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StatusTramsacao> adicionarDebito(@RequestBody CartaoDTO cartaoDTO) {
+    public ResponseEntity<StatusTramsacao> debitarSaldo(@RequestBody CartaoDTO cartaoDTO) {
 
-        return this.cartaoService.consultarCartao(cartaoDTO.getNumeroCartao())
-                .map(cartao -> Arrays.asList(new ValidarCartao.ValidadorSenha(), new ValidarCartao.ValidadorSaldo())
-                        .stream().map(validador -> validador.validar(cartaoDTO, cartao)).collect(Collectors.toList())
-                        .stream().filter(statusTramsacao -> ObjectUtils.isNotEmpty(statusTramsacao)).map(statusTramsacao -> ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(statusTramsacao))
-                        .findAny().orElseGet(() -> {
-                            this.cartaoService.adicionarDebito(cartao.getId(), cartaoDTO.getSaldo() - cartaoDTO.getSaldo());
-                            return ResponseEntity.status(HttpStatus.CREATED).body(StatusTramsacao.OK);
-                        }))
-                .orElse(ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(StatusTramsacao.CARTAO_INEXISTENTE));
+        return this.cartaoService.consultar(cartaoDTO.getNumeroCartao())
+                .map(cartao -> Arrays.asList(new ValidarCartao.Senha(), new ValidarCartao.Saldo())
+                        .stream().map(v -> v.validar(cartaoDTO, cartao)).collect(Collectors.toList())
+                        .stream().filter(st -> ObjectUtils.isNotEmpty(st)).map(st -> ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(st))
+                        .findAny().orElseGet(() -> this.cartaoService.debitarSaldo(cartao.getId(), cartao.getSaldo() - cartaoDTO.getSaldo())
+                                .map(v -> ResponseEntity.status(HttpStatus.CREATED).body(StatusTramsacao.OK)).get()))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(StatusTramsacao.CARTAO_INEXISTENTE));
     }
 }

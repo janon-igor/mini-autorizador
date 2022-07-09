@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface CartaoService {
 
-    Optional<Cartao> consultarCartao(final String numeroCartao);
+    Optional<Cartao> consultar(final String numeroCartao);
 
-    Cartao cadastrarCartao(final CartaoDTO cartao);
+    Cartao cadastrar(final CartaoDTO cartao);
 
     Optional<Double> consultarSaldo(final String numeroCartao);
 
-    void adicionarDebito(final Long id, final double valorDebito);
+    Optional<Integer> debitarSaldo(final Long id, final double valorDebito);
 }

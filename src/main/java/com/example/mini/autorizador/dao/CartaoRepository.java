@@ -19,5 +19,5 @@ public interface CartaoRepository extends JpaRepository<Cartao, Long> {
 
     @Modifying
     @Query("UPDATE Cartao SET saldo = :valorDebito WHERE id = :id")
-    void debitarValor(@Param(value = "id") long id, @Param(value = "valorDebito") double valorDebito);
+    Optional<Integer> debitar(@Param(value = "id") long id, @Param(value = "valorDebito") double valorDebito);
 }

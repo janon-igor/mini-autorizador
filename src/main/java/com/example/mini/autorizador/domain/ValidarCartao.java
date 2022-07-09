@@ -10,14 +10,14 @@ public class ValidarCartao {
         StatusTramsacao validar(A a, B b);
     }
 
-    public static class ValidadorSenha implements Validador<CartaoDTO, Cartao> {
+    public static class Senha implements Validador<CartaoDTO, Cartao> {
         @Override
         public StatusTramsacao validar(CartaoDTO cartaoDTO, Cartao cartao) {
             return !cartaoDTO.getSenha().equals(cartao.getSenha()) ? StatusTramsacao.SENHA_INVALIDA : null;
         }
     }
 
-    public static class ValidadorSaldo implements Validador<CartaoDTO, Cartao> {
+    public static class Saldo implements Validador<CartaoDTO, Cartao> {
         @Override
         public StatusTramsacao validar(CartaoDTO cartaoDTO, Cartao cartao) {
             return cartao.getSaldo() <= 0 || cartaoDTO.getSaldo() <= 0 || cartaoDTO.getSaldo() > cartao.getSaldo() ? StatusTramsacao.SALDO_INSUFICIENTE : null;
