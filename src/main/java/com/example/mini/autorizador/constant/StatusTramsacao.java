@@ -1,4 +1,4 @@
-package com.example.mini.autorizador.enums;
+package com.example.mini.autorizador.constant;
 
 public enum StatusTramsacao {
     OK,
