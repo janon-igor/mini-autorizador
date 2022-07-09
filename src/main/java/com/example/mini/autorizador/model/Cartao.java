@@ -36,6 +36,9 @@ public class Cartao implements Serializable {
     @Column(name = "saldo", nullable = false)
     private Double saldo;
 
+    @Version
+    private Long version;
+
     public CartaoDTO convertToDTO() {
         return CartaoDTO.builder()
                 //.id(this.id)
